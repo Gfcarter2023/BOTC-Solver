@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Players</title>
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+    <h1>New Game Setup</h1>
+    <form id="player-creation-form">
+        <label for="num-players">Enter the Number of Players:</label>
+        <input type="number" id="num-players" min="1" required>
+        <button type="submit">Create Players</button>
+    </form>
+
+    <form id="player-creation-form">
+    <label for="file-name">Enter File Name (e.g., TeamA):</label>
+    <input type="text" id="file-name" required><br><br>
+    
+    <label for="num-players">Enter the Number of Players:</label>
+    <input type="number" id="num-players" min="1" required>
+    <button type="submit">Create Players</button>
+    </form>
+
+    <script>
+
+    document.getElementById('player-creation-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    
+    const fileNameInput = document.getElementById('file-name').value.trim();
+    // 1. Sanitize the filename and ensure it ends with .json
+    const fileName = fileNameInput.endsWith('.json') ? fileNameInput : `${fileNameInput}.json`;
+    const numPlayers = parseInt(document.getElementById('num-players').value, 10);
+    
+    const newPlayers = [];
+    // ... (rest of the player creation loop remains the same) ...
+    for (let i = 1; i <= numPlayers; i++) {
+        const playerId = `${i}`; 
+        newPlayers.push({
+            id: playerId,
+            name: `Player ${i}`,
+            score: 0
+        });
+    }
+
+    // 2. Send the file name AND the player data to the backend
+    try {
+        const response = await fetch(`http://localhost:3000/api/players/create?file=${fileName}`, { // Pass file name as a query parameter
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newPlayers)
+        });
+
+        if (response.ok) {
+            alert(`Players created and saved to ${fileName}!`);
+            // 3. Redirect to the main player list page, passing the new file name 
+            //    so the main page knows which file to load!
+            window.location.href = "C:/Users/gmone/OneDrive/Documents/BOTC-Solver/Website/town.html"; 
+        } else {
+            // ... error handling ...
+        }
+    } catch (error) {
+        // ... network error handling ...
+    }
+});
+    </script>
+</body>
+</html>
