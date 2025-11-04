@@ -4,58 +4,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Circular Pattern Generator</title>
-    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Use Inter Font -->
     <style>
-     /* style.css */
-.player-circle {
-  /* Style the link itself */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  
-  /* Make it a fixed size and a circle */
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  
-  /* Visual styling */
-  background-color: #4CAF50;
-  color: white;
-  text-decoration: none; /* Remove link underline */
-  margin: 10px;
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-  transition: transform 0.2s;
-}
+      .player-circle {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        
+        background-color: #4CAF50;
+        color: white;
+        text-decoration: none;
+        margin: 10px;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        transition: transform 0.2s;
+      }
 
-.player-circle:hover {
-  transform: scale(1.05); /* Slight hover effect */
-}
+      .player-circle:hover {
+        transform: scale(1.05); /* Slight hover effect */
+      }
 
-.player-initials {
-  font-size: 1.5em;
-  font-weight: bold;
-}
+      .player-initials {
+        font-size: 1.5em;
+        font-weight: bold;
+      }
 
-.player-name {
-  font-size: 0.8em;
-  margin-top: 5px;
-}
+      .player-name {
+        font-size: 0.8em;
+        margin-top: 5px;
+      }
     </style>
 </head>
 <body>
-  <div id="players-container">
-  <a href="player_info.html?id=123" class="player-circle" data-player-id="123">
-    <span class="player-initials">AB</span>
-    <span class="player-name">Alex Brown</span>
-  </a>
+  <h1>Current Game: <span id="game-file-name"></span></h1> 
+      <div id="players-container" class="players-grid"> 
+          </div>
+    <script>
+      const PLAYERS_CONTAINER = document.getElementById('players-container');
+      const GAME_FILE_NAME_DISPLAY = document.getElementById('game-file-name');
 
-  <a href="player_info.html?id=456" class="player-circle" data-player-id="456">
-    <span class="player-initials">CD</span>
-    <span class="player-name">Chris Davis</span>
-  </a>
-  </div>
+    function createPlayerCircle(player, fileName) {
+        const playerLink = document.createElement('a');
+        
+        playerLink.href = `player_info.html?id=${player.id}?file=${fileName}`; 
+        playerLink.className = 'player-circle';
+        playerLink.setAttribute('data-player-id', player.id);
+        
+        const initials = document.createElement('span');
+        const nameParts = player.name.split(' ');
+        initials.textContent = nameParts.map(part => part[0]).join('').toUpperCase().substring(0, 2); 
+        initials.className = 'player-initials';
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = player.name;
+        nameSpan.className = 'player-name';
+        
+        playerLink.appendChild(initials);
+        playerLink.appendChild(nameSpan);
+      
+
+        return playerLink;
+    }
+
+
+    async function loadAndRenderPlayers() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const fileName = urlParams.get('file');
+
+        if (!fileName) {
+            PLAYERS_CONTAINER.innerHTML = '<p>Error: No player data file specified in the URL.</p>';
+            return;
+        }
+        
+        GAME_FILE_NAME_DISPLAY.textContent = fileName.replace('.json', '');
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/players/all?file=${fileName}`);
+            
+            if (!response.ok) {
+                throw new Error(`Server responded with status: ${response.status}`);
+            }
+
+            const players = await response.json();
+            
+            if (players.length === 0) {
+                PLAYERS_CONTAINER.innerHTML = '<p>No players found in the file.</p>';
+                return;
+            }
+
+            PLAYERS_CONTAINER.innerHTML = ''; 
+            
+            players.forEach(player => {
+                const circleElement = createPlayerCircle(player, fileName);
+                PLAYERS_CONTAINER.appendChild(circleElement);
+            });
+
+        } catch (error) {
+            console.error('Failed to load players:', error);
+            PLAYERS_CONTAINER.innerHTML = `<p>Error loading players: ${error.message}. Is the server running?</p>`;
+        }
+    }
+
+    loadAndRenderPlayers();
+    </script>
 </body>
 </html>

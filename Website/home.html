@@ -28,12 +28,10 @@
     event.preventDefault();
     
     const fileNameInput = document.getElementById('file-name').value.trim();
-    // 1. Sanitize the filename and ensure it ends with .json
     const fileName = fileNameInput.endsWith('.json') ? fileNameInput : `${fileNameInput}.json`;
     const numPlayers = parseInt(document.getElementById('num-players').value, 10);
     
     const newPlayers = [];
-    // ... (rest of the player creation loop remains the same) ...
     for (let i = 1; i <= numPlayers; i++) {
         const playerId = `${i}`; 
         newPlayers.push({
@@ -43,7 +41,6 @@
         });
     }
 
-    // 2. Send the file name AND the player data to the backend
     try {
         const response = await fetch(`http://localhost:3000/api/players/create?file=${fileName}`, { // Pass file name as a query parameter
             method: 'POST',
@@ -55,9 +52,7 @@
 
         if (response.ok) {
             alert(`Players created and saved to ${fileName}!`);
-            // 3. Redirect to the main player list page, passing the new file name 
-            //    so the main page knows which file to load!
-            window.location.href = "C:/Users/gmone/OneDrive/Documents/BOTC-Solver/Website/town.html"; 
+            window.location.href = `C:/Users/gmone/OneDrive/Documents/BOTC-Solver/Website/town.html?file=${fileName}`; 
         } else {
             // ... error handling ...
         }

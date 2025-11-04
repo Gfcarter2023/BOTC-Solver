@@ -67,21 +67,21 @@ app.get('/api/player/:id', async (req, res) => {
 app.post('/api/player/:id', async (req, res) => {
     const playerId = req.params.id;
     const newPlayerData = req.body;
-    
+    const fileName = req.query.file; 
+
     // Simple validation
     if (!newPlayerData.name || newPlayerData.score === undefined) {
         return res.status(400).json({ message: 'Missing required fields (name or score)' });
     }
-
     try {
-        const players = await readPlayersData();
+        const players = await readPlayersData(fileName);
         const index = players.findIndex(p => p.id === playerId);
 
         if (index !== -1) {
             // Update the player object, preserving the ID
             players[index] = { ...players[index], ...newPlayerData };
-            
-            await writePlayersData(players);
+            await writePlayersData(players, fileName);
+
             res.json({ message: 'Player updated successfully', player: players[index] });
         } else {
             res.status(404).json({ message: 'Player not found for update' });
@@ -113,6 +113,26 @@ app.post('/api/players/create', async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error: Could not write new player data.' });
+    }
+});
+
+app.get('/api/players/all', async (req, res) => {
+    const fileName = req.query.file; // <-- Is this line executing and getting a value?
+
+    if (!fileName) {
+        // If you see a 400 error in the browser check, the file parameter is missing.
+        return res.status(400).json({ message: 'Missing file parameter.' });
+    }
+
+    try {
+        const players = await readPlayersData(fileName); 
+        // If readPlayersData fails (e.g., file doesn't exist), it returns [], not an error,
+        // unless a different error (like file corruption) occurs.
+        res.json(players); 
+    } catch (error) {
+        // This catch block would send the 500 status code, which fails the fetch.
+        console.error('Error fetching all players:', error);
+        res.status(500).json({ message: 'Server error fetching player list.' });
     }
 });
 
