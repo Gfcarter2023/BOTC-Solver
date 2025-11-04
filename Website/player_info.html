@@ -14,19 +14,52 @@
 </form>
 
 <script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const playerId = urlParams.get('id');
-  
-  if (playerId) {
-    // 1. Fetch the player's current data from the backend using this ID.
-    // 2. Populate the form fields with the retrieved data.
-    // 3. Set up the form submit to send updated data back to the backend.
-    
-    console.log("Editing Player ID:", playerId);
-    // ... REST of the data fetching/saving logic ...
-  } else {
-    console.error("No player ID found in URL.");
-  }
+
+async function fetchPlayerData(id) {
+    console.log(`http://localhost:3000/api/player/${id}`)
+    const response = await fetch(`http://localhost:3000/api/player/${id}`);
+    if (response.ok) {
+        const player = await response.json();
+        // Populate your form fields here
+        document.getElementById('name').value = player.name;
+        document.getElementById('score').value = player.score;
+    } else {
+        console.error('Failed to fetch player data.');
+    }
+}
+
+// Call this on page load after getting the ID
+const urlParams = new URLSearchParams(window.location.search);
+const playerId = urlParams.get('id');
+if (playerId) {
+    fetchPlayerData(playerId);
+}
+
+
+document.getElementById('edit-form').addEventListener('submit', async (event) => {
+    event.preventDefault(); // Prevent default form submission
+
+    const updatedData = {
+        name: document.getElementById('name').value,
+        score: parseInt(document.getElementById('score').value, 10)
+    };
+
+    const response = await fetch(`http://localhost:3000/api/player/${playerId}`, {
+        method: 'POST', // Use POST or PUT for updates
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedData)
+    });
+
+    if (response.ok) {
+        alert('Player information updated successfully!');
+        // Optionally redirect back to the main page
+        // window.location.href = 'index.html';
+    } else {
+        alert('Error saving data.');
+    }
+});
 </script>
 </body>
 </html>
