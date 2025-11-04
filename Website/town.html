@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circular Pattern Generator</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter Font -->
+    <style>
+     /* style.css */
+.player-circle {
+  /* Style the link itself */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+  /* Make it a fixed size and a circle */
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  
+  /* Visual styling */
+  background-color: #4CAF50;
+  color: white;
+  text-decoration: none; /* Remove link underline */
+  margin: 10px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+
+.player-circle:hover {
+  transform: scale(1.05); /* Slight hover effect */
+}
+
+.player-initials {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.player-name {
+  font-size: 0.8em;
+  margin-top: 5px;
+}
+    </style>
+</head>
+<body>
+  <div id="players-container">
+  <a href="player_info.html?id=123" class="player-circle" data-player-id="123">
+    <span class="player-initials">AB</span>
+    <span class="player-name">Alex Brown</span>
+  </a>
+
+  <a href="player_info.html?id=456" class="player-circle" data-player-id="456">
+    <span class="player-initials">CD</span>
+    <span class="player-name">Chris Davis</span>
+  </a>
+  </div>
+</body>
+</html>

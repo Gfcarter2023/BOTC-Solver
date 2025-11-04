@@ -1,0 +1,14 @@
+[
+  {
+    "id": "123",
+    "name": "Alex Brown",
+    "initials": "AB",
+    "score": 85
+  },
+  {
+    "id": "456",
+    "name": "Chris Davis",
+    "initials": "CD",
+    "score": 92
+  }
+]
